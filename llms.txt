@@ -1,0 +1,37 @@
+# ML House Price Prediction
+> A machine learning project that predicts house sale prices using the Ames Housing dataset (2,930 records, 81 features), trained with Gradient Boosting achieving R²=0.9363, served via an interactive Streamlit web app.
+
+## Tech Stack
+- **Language:** Python 3.13
+- **ML Framework:** scikit-learn (LinearRegression, Ridge, Lasso, ElasticNet, RandomForestRegressor, GradientBoostingRegressor)
+- **Data Processing:** pandas, numpy
+- **Visualisation:** matplotlib, seaborn
+- **Web App:** Streamlit
+- **Model Persistence:** pickle, json
+
+## Core Logic Entry Points
+- `run_phase1.py`: Full Phase 1 pipeline — load → clean → EDA → train Linear Regression → save models + 6 plots
+- `run_phase2.py`: Full Phase 2 pipeline — feature engineering → train 6 models → GridSearchCV → cross-validation → save best models + 8 plots
+- `app.py`: Streamlit app — loads saved models, accepts user input via sliders, predicts price, renders gauge & feature contribution charts
+- `data/train.csv`: Ames Housing dataset (2,930 rows × 81 columns), target column = `SalePrice`
+- `models/`: Saved model artifacts (.pkl) and feature name lists (.json)
+
+## Key Logic / Data Flow
+- **Training:** `data/train.csv` → Impute NaNs → One-hot encode categoricals → Feature engineering (11 new columns) → StandardScaler → Train 6 models → Save best 3 as .pkl
+- **Prediction:** User input (10 sliders) → Build feature vector aligned to training columns → StandardScaler transform → Model.predict() → np.expm1() to reverse log-transform → Display price
+- **Evaluation:** Predictions vs actuals using MAE, RMSE, R² on a held-out 20% test set; additionally validated with 5-Fold Cross Validation
+
+## External Dependencies
+- No external APIs required
+- Dataset is local (`data/train.csv`) — Ames Housing sourced from Kaggle / OpenML
+- All models are pre-trained and saved; no internet needed to run the app
+
+## LLM Context Hints
+- **Target variable:** `SalePrice` (raw dollars in Phase 1; log-transformed via `np.log1p` in Phase 2, reversed with `np.expm1` after prediction)
+- **Best model:** `GradientBoostingRegressor` saved as `models/gradient_boosting_final.pkl`
+- **Feature names:** Always load from `models/feature_names_phase2.json` — the training feature set has 286 columns after encoding + engineering
+- **Scaler:** Always use `models/scaler_phase2.pkl` — must apply the SAME scaler used during training before any prediction
+- The app works in "demo mode" (formula-based estimate) if models are not yet trained — run phase1 and phase2 scripts first
+
+## Last Synced
+2026-03-11T16:34:00+05:30
